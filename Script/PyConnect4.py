@@ -1,5 +1,5 @@
 try:
-    import termcolor as tc
+    import termcolor
     from termcolor import colored
     print("termcolor library imported sucessfuly")
     color_cli = True
@@ -44,7 +44,10 @@ def gridPrint():
                 else:
                     print("["+str(grid[i][j]), end="]")
             else:
-                print("["+str(grid[i][j]), end="]")
+                if grid[i][j] == "!4":
+                    print("[4", end="]")
+                else:
+                    print("["+str(grid[i][j]), end="]")
         print()
 
 def gameTurn():
@@ -54,7 +57,10 @@ def gameTurn():
     if move == 0:
         print("Type the number of a row")
     moveID = input()
-    if moveID not in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
+    if moveID == "e":
+        print("Exiting PyConnect4...")
+        return
+    elif moveID not in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
         if len(moveID) > 3:
             print(str(moveID[:3] + "... is not a valid number"))
             input()
@@ -64,12 +70,13 @@ def gameTurn():
             return gameTurn()
     else:
         emptySpaceFinder(int(moveID))
-        winCheck()
-        if turn == "X":
-            turn = "O"
-        elif turn == "O":
-            turn = "X"
-        return gameTurn()
+        if winCheck() == False:
+            if turn == "X":
+                turn = "O"
+            elif turn == "O":
+                turn = "X"
+            move += 1
+            return gameTurn()
 
 def emptySpaceFinder(row):
     if grid[0][row] == "X" or grid[0][row] == "O":
@@ -78,7 +85,7 @@ def emptySpaceFinder(row):
         for i in range(2,9):
             if grid[i][row] == "X" or grid[i][row] == "O":
                 grid[i-1][row] = turn
-                break
+                return
         grid[8][row] = turn
     return
 
@@ -100,11 +107,34 @@ def winCheck():
                 x_streak = 0
                 o_streak = 0
             if x_streak == 4:
-                win("X",i,i,j-4,j)
-                break
+                win("X",i,i,j-3,j)
+                return True
             elif o_streak == 4:
-                win("O",i,i,j-4,j)
-                break
+                win("O",i,i,j-3,j)
+                return True
+    #Row check
+    x_streak = 0
+    o_streak = 0
+    for j in range(10):
+        x_streak = 0
+        o_streak = 0
+        for i in range(9):
+            if grid[i][j] == "X":
+                x_streak += 1
+                o_streak = 0
+            elif grid[i][j] == "O":
+                x_streak = 0
+                o_streak += 1
+            else:
+                x_streak = 0
+                o_streak = 0
+            if x_streak == 4:
+                win("X",i-3,i,j,j)
+                return True
+            elif o_streak == 4:
+                win("O",i-3,i,j,j)
+                return True
+    return False
 
 def win(winner,lineStart,lineEnd,rowStart,rowEnd):
     grid[lineStart][rowStart] = "!4"
@@ -124,7 +154,7 @@ def win(winner,lineStart,lineEnd,rowStart,rowEnd):
         lineTrd = lineStart + 2
     if rowStart == rowEnd:
         rowSec = rowStart
-        rowTrd = rowStart
+        rowTrd = rowStart 
     elif rowStart > rowEnd:
         rowSec = rowStart - 1
         rowTrd = rowStart - 2
@@ -133,5 +163,13 @@ def win(winner,lineStart,lineEnd,rowStart,rowEnd):
         rowTrd = rowStart + 2
     grid[lineSec][rowSec] = "!4"
     grid[lineTrd][rowTrd] = "!4"
+    if color_cli == True:
+        if winner == "X":
+            print("[Connect 4] " + colored("X","red") + " is the " + colored("winner","yellow"))
+        elif winner == "O":
+            print("[Connect 4] " + colored("O","blue") + " is the " + colored("winner","yellow"))
+    else:
+        print("[Connect 4] " + winner + " is the winner")
+    gridPrint()
 
 gameTurn()
