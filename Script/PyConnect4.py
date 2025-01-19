@@ -19,7 +19,6 @@ grid = [
     [" "," "," "," "," "," "," "," "," "," "],
     [" "," "," "," "," "," "," "," "," "," "]
 ]
-
 def header():
     if color_cli == True:
         if turn == "X":
@@ -28,7 +27,6 @@ def header():
             print("[Connect 4] Move "+ str(move) + " ("+colored("O","blue")+" turn)")
     else:
         print("[Connect 4] Move "+ str(move) + " ("+turn+" turn)")
-
 def gridPrint():
     for i in range(9):
         for j in range(10):
@@ -49,9 +47,8 @@ def gridPrint():
                 else:
                     print("["+str(grid[i][j]), end="]")
         print()
-
 def gameTurn():
-    global turn, move
+    global move, turn
     header()
     gridPrint()
     if move == 0:
@@ -77,20 +74,17 @@ def gameTurn():
                 turn = "X"
             move += 1
             return gameTurn()
-
 def emptySpaceFinder(row):
     if grid[0][row] == "X" or grid[0][row] == "O":
-        print("The row " + row + " is full")
+        print("The row " + str(row) + " is full")
     else:
-        for i in range(2,9):
+        for i in range(1,9):
             if grid[i][row] == "X" or grid[i][row] == "O":
                 grid[i-1][row] = turn
                 return
         grid[8][row] = turn
     return
-
 def winCheck():
-    #Line check
     x_streak = 0
     o_streak = 0
     for i in range(9):
@@ -112,7 +106,6 @@ def winCheck():
             elif o_streak == 4:
                 win("O",i,i,j-3,j)
                 return True
-    #Row check
     x_streak = 0
     o_streak = 0
     for j in range(10):
@@ -134,8 +127,57 @@ def winCheck():
             elif o_streak == 4:
                 win("O",i-3,i,j,j)
                 return True
+    rows = 9
+    cols = 10
+    for i in range(rows - 4 + 1):
+        for j in range(cols - 4 + 1):
+            x_streak = 0
+            o_streak = 0
+            for k in range(4):
+                if grid[i+k][j+k] == "X":
+                    x_streak += 1
+                    o_streak = 0
+                elif grid[i+k][j+k] == "O":
+                    x_streak = 0
+                    o_streak += 1
+                else:
+                    x_streak = 0
+                    o_streak = 0
+                if x_streak == 4:
+                    win("X", i, i+k, j, j+k)
+                    return True
+                elif o_streak == 4:
+                    win("O", i, i+k, j, j+k)
+                    return True
+    for i in range(4 - 1, rows):
+        for j in range(cols - 4 + 1):
+            x_streak = 0
+            o_streak = 0
+            for k in range(4):
+                if grid[i-k][j+k] == "X":
+                    x_streak += 1
+                    o_streak = 0
+                elif grid[i-k][j+k] == "O":
+                    x_streak = 0
+                    o_streak += 1
+                else:
+                    x_streak = 0
+                    o_streak = 0
+                if x_streak == 4:
+                    win("X", i, i-k, j, j+k)
+                    return True
+                elif o_streak == 4:
+                    win("O", i, i-k, j, j+k)
+                    return True
+    fulRow = 0
+    for i in range(10):
+        if grid[0][i] == 'X' or grid[0][i] == 'Y':
+            fulRow += 1
+    if fulRow == 10:
+        gridPrint()
+        print("Draw ! No empty place left")
+        return True
     return False
-
 def win(winner,lineStart,lineEnd,rowStart,rowEnd):
     grid[lineStart][rowStart] = "!4"
     grid[lineEnd][rowEnd] = "!4"
@@ -171,5 +213,33 @@ def win(winner,lineStart,lineEnd,rowStart,rowEnd):
     else:
         print("[Connect 4] " + winner + " is the winner")
     gridPrint()
+    input()
+    home()
 
-gameTurn()
+def home():
+    global turn, move, grid
+    print("-------------------------------")
+    print("          PyConnect 4          ")
+    print("-------------------------------")
+    print("")
+    print("             V 1.1             ")
+    print()
+    print()
+    print()
+    print("     Press any key to start    ")
+    input()
+    turn = "X"
+    move = 0
+    grid = [
+        ["0","1","2","3","4","5","6","7","8","9"],
+        [" "," "," "," "," "," "," "," "," "," "],
+        [" "," "," "," "," "," "," "," "," "," "],
+        [" "," "," "," "," "," "," "," "," "," "],
+        [" "," "," "," "," "," "," "," "," "," "],
+        [" "," "," "," "," "," "," "," "," "," "],
+        [" "," "," "," "," "," "," "," "," "," "],
+        [" "," "," "," "," "," "," "," "," "," "],
+        [" "," "," "," "," "," "," "," "," "," "]
+    ]
+    gameTurn()
+home()
