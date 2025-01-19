@@ -15,7 +15,7 @@ Exemple of a game:
 [ ][ ][X][O][X][X][ ][ ][ ][ ]
 [X][O][X][X][O][O][ ][ ][ ][ ]
 ```
->[!INFO]
+>[!NOTE]
 >The 'O' and 'X' are colored if you play it in a CLI (not compatible with Python Calculator)
 
 **Other features :**
